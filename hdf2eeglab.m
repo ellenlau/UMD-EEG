@@ -1,8 +1,22 @@
-function hdf2eeglab(fileName,outputDir, subjNum)
+function hdf2eeglab(fileName,outputDir, subjNum, sampleRate, downSampleQ)
 
-%%You need a fair amount of working memory to read in raw datafiles sampled at
+%%This script reads in an h5 file created by cnt2h5 and saves it 
+%%out to EEGLAB's .set+.fdt format. 
+
+%%About downSampleQ: If you are reading in raw datafiles
+%%sampled at 1000Hz and they are long, you may not have enough memory to
+%%open the resulting .set file in EEGLAB later. So if you set downSampleQ
+%%to 1, the data will be downsampled by a factor of 2. So if you started
+%%with 1000Hz sampling rate, the output dataset would have a sampling rate
+%%of 500Hz. This may be a good idea because it will cut your file size in
+%%half for all the rest of your analysis, speeding computation, and if you
+%%are using a standard online lowpass filter of ~70Hz during recording,
+%%you aren't gaining any additional information with 1000Hz vs 500Hz. For
+%%sampleRate you should still enter the original sampleRate.
+
+%%In any case you need a fair amount of working memory to read in raw datafiles sampled at
 %%1000Hz. May work on a laptop but you may need to close out all other
-%%applications. 
+%%applications and restart MATLAB to clear memory first. 
 
 %%IMPORTANT: The way this conversion script works leads to one minor
 %%headache. Even though you call EEGLAB within this function, EEGLAB will
@@ -44,11 +58,17 @@ function hdf2eeglab(fileName,outputDir, subjNum)
     %%Finally, we add this new 'channel' to the data array 
     %%**(this computation is slow, can it be optimized?)
     raw_data(numChan+1,:) = triggerLong;
-
+    
+    %%And downsample if desired
+    if downSampleQ == 1
+        raw_data = downsample(raw_data',2);
+        raw_data = raw_data';
+        sampleRate = sampleRate/2;
+    end
     
     %%Now we read the data array into EEGLAB
     [ALLEEG EEG CURRENTSET ALLCOM] = eeglab;
-    EEG = pop_importdata('dataformat','array','nbchan',0,'data','raw_data','setname',strcat('S',int2str(subjNum)),'subject',int2str(subjNum),'srate',1000,'pnts',0,'xmin',0);
+    EEG = pop_importdata('dataformat','array','nbchan',0,'data','raw_data','setname',strcat('S',int2str(subjNum)),'subject',int2str(subjNum),'srate',sampleRate,'pnts',0,'xmin',0);
     EEG = eeg_checkset( EEG );
     [ALLEEG EEG CURRENTSET] = pop_newset(ALLEEG, EEG, 0,'gui','off');
 
@@ -57,10 +77,12 @@ function hdf2eeglab(fileName,outputDir, subjNum)
     EEG = eeg_checkset( EEG );
     [ALLEEG EEG] = eeg_store(ALLEEG, EEG, CURRENTSET);
 
-%     %%DOWNSAMPLE TO 500 Hz
-%     EEG = pop_resample( EEG, 500);
-%     EEG = eeg_checkset( EEG );
-%     [ALLEEG EEG] = eeg_store(ALLEEG, EEG, CURRENTSET);
-% 
-%     %%save as EEGLAB dataset (a pair of .set and .fdt files)
+ 
+    %%save as EEGLAB dataset (a pair of .set and .fdt files)
     EEG = pop_saveset( EEG, 'filename',strcat('S',int2str(subjNum),'.set'),'filepath',outputDir);
+
+    
+    
+
+    
+
