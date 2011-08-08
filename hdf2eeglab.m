@@ -1,4 +1,4 @@
-function hdf2eeglab(fileName,outputDir, subjNum, sampleRate, downSampleQ)
+function hdf2eeglab(fileName,outputDir, subjNum, sampleRate, downSampleRate)
 
 %%This script reads in an h5 file created by cnt2h5 and saves it 
 %%out to EEGLAB's .set+.fdt format. 
@@ -58,13 +58,7 @@ function hdf2eeglab(fileName,outputDir, subjNum, sampleRate, downSampleQ)
     %%Finally, we add this new 'channel' to the data array 
     %%**(this computation is slow, can it be optimized?)
     raw_data(numChan+1,:) = triggerLong;
-    
-    %%And downsample if desired
-    if downSampleQ == 1
-        raw_data = downsample(raw_data',2);
-        raw_data = raw_data';
-        sampleRate = sampleRate/2;
-    end
+
     
     %%Now we read the data array into EEGLAB
     [ALLEEG EEG CURRENTSET ALLCOM] = eeglab;
@@ -76,6 +70,12 @@ function hdf2eeglab(fileName,outputDir, subjNum, sampleRate, downSampleQ)
     EEG = pop_chanevent(EEG, numChan+1,'edge','leading','edgelen',0);
     EEG = eeg_checkset( EEG );
     [ALLEEG EEG] = eeg_store(ALLEEG, EEG, CURRENTSET);
+        
+    %%And downsample if desired
+    if downSampleRate != 0 
+        EEG = pop_resample( EEG, downSampleRate);
+        [ALLEEG EEG] = eeg_store(ALLEEG, EEG, CURRENTSET);
+    end
 
  
     %%save as EEGLAB dataset (a pair of .set and .fdt files)
