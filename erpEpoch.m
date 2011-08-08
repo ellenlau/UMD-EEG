@@ -33,7 +33,7 @@ function erpEpoch(subjList,bdfFileName, dataPath, rawDir, epochDir, begTime, end
 
 
 %%Example:
-%%erpPreProc([1 2 3 4 5 6], 'test.bdf','/Users/ellen/Documents/Experiments/DAGGER/','raw/','epochs/', -100, 1000, -100, 0)
+%%erpEpoch([1 2 3 4 5 6], 'test.bdf','/Users/ellen/Documents/Experiments/DAGGER/','raw/','epochs/', -100, 1000, -100, 0)
 
 [ALLEEG EEG CURRENTSET ALLCOM] = eeglab;
 
