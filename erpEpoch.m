@@ -1,4 +1,4 @@
-function erpEpoch(subjList,bdfFileName, dataPath, rawDir, epochDir, begTime, endTime, begBL, endBL)
+function erpEpoch(subjList,expDir, bdfFileName, rawDir, epochDir, begTime, endTime, begBL, endBL)
 
 %%This script takes a set of raw data .set files as input and saves out a
 %%set of epoch files--one file for each subject that has the raw data for
@@ -33,7 +33,7 @@ function erpEpoch(subjList,bdfFileName, dataPath, rawDir, epochDir, begTime, end
 
 
 %%Example:
-%%erpEpoch([1 2 3 4 5 6], 'test.bdf','/Users/ellen/Documents/Experiments/DAGGER/','raw/','epochs/', -100, 1000, -100, 0)
+%%erpEpoch([1 2 3 4 5 6], '/Users/ellen/Documents/Experiments/DAGGER/','test.bdf','raw/','epochs/', -100, 1000, -100, 0)
 
 [ALLEEG EEG CURRENTSET ALLCOM] = eeglab;
 
@@ -46,16 +46,16 @@ for s = subjList
     count = count + 1;
        
         %%Get data
-        EEG = pop_loadset('filename',strcat('S',int2str(s),'.set'),'filepath',strcat(dataPath,rawDir));
+        EEG = pop_loadset('filename',strcat('S',int2str(s),'.set'),'filepath',strcat(expDir,rawDir));
         %%Create event list
         EEG = pop_creabasiceventlist(EEG, '', {'boundary'}, {-99});
         %%Create bins
-        EEG = pop_binlister( EEG, strcat(dataPath,bdfFileName), 'no', '', 0, [], [], 0, 0, 0);
+        EEG = pop_binlister( EEG, strcat(expDir,bdfFileName), 'no', '', 0, [], [], 0, 0, 0);
         %%Extract bin-based epochs
         EEG = pop_epochbin( EEG , [begTime  endTime],  [begBL  endBL]);
         %%Save EEG set
         [ALLEEG EEG] = eeg_store(ALLEEG, EEG, CURRENTSET);
-        EEG = pop_saveset(EEG, 'filename',strcat('S',int2str(s),'_elist_nelist_be'),'filepath',strcat(dataPath,epochDir));
+        EEG = pop_saveset(EEG, 'filename',strcat('S',int2str(s),'_elist_nelist_be'),'filepath',strcat(expDir,epochDir));
         
 end
 
