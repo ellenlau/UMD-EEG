@@ -1,4 +1,4 @@
-function hdf2eeglab(fileName,outputDir, subjNum, sampleRate, downSampleRate)
+function hdf2eeglab(expDir,fileName,outputDir, subjNum, sampleRate, downSampleRate)
 
 %%This script reads in an h5 file created by cnt2h5 and saves it 
 %%out to EEGLAB's .set+.fdt format. 
@@ -36,9 +36,9 @@ function hdf2eeglab(fileName,outputDir, subjNum, sampleRate, downSampleRate)
 
     global raw_data;
     
-    [raw_data] = hdf5read(fileName,'/data');
-  
-    triggers = hdf5read(fileName,'/triggers'); %%this is two columns, first column = event code, second column = sample in which it occurred
+    
+    raw_data = hdf5read(strcat(expDir,fileName),'/data');
+    triggers = hdf5read(strcat(expDir,fileName),'/triggers'); %%this is two columns, first column = event code, second column = sample in which it occurred
 
     numChan = size(raw_data,1);
     numSamples = size(raw_data,2);
@@ -72,14 +72,15 @@ function hdf2eeglab(fileName,outputDir, subjNum, sampleRate, downSampleRate)
     [ALLEEG EEG] = eeg_store(ALLEEG, EEG, CURRENTSET);
         
     %%And downsample if desired
-    if downSampleRate != 0 
+    if downSampleRate ~= 0 
         EEG = pop_resample( EEG, downSampleRate);
         [ALLEEG EEG] = eeg_store(ALLEEG, EEG, CURRENTSET);
     end
 
- 
+    
+    
     %%save as EEGLAB dataset (a pair of .set and .fdt files)
-    EEG = pop_saveset( EEG, 'filename',strcat('S',int2str(subjNum),'.set'),'filepath',outputDir);
+    EEG = pop_saveset( EEG, 'filename',strcat('S',int2str(subjNum),'.set'),'filepath',strcat(expDir,outputDir));
 
     
     
