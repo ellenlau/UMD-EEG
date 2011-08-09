@@ -20,7 +20,7 @@ function erpEpoch(subjList,expDir, bdfFileName, rawDir, epochDir, begTime, endTi
 %%of interest. Read the wiki or the ERPLAB documentation for info on what
 %%format this needs to be in.
 
-%%dataPath is the main directory for your experiment. The bdf file needs to
+%%expDir is the main directory for your experiment. The bdf file needs to
 %%be immediately within this directory. You should have subdirectories to
 %%store your raw .set files and your output .set epoch files
 
