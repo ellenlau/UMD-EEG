@@ -40,7 +40,7 @@ function hdf2eeglab(expDir,fileName,outputDir, subjNum,sampleRate)
     triggerLong = zeros(numSamples,1);
 
     %%Now we fill it in with the actual codes stored in 'triggers'
-    for t = 1:25 %numEvents
+    for t = 1:numEvents
         tCode= triggers(1,t);
         tSample = triggers(2,t);
         triggerLong(tSample) = tCode;
@@ -50,9 +50,7 @@ function hdf2eeglab(expDir,fileName,outputDir, subjNum,sampleRate)
     %%**(this computation is slow, can it be optimized?)
     raw_data(numChan+1,:) = triggerLong;
     
-    %%A hack for testing on my weak laptop
-    raw_data = raw_data(:,1:500000);
-
+ 
     
     %%Now we read the data array into EEGLAB
     [ALLEEG EEG CURRENTSET ALLCOM] = eeglab;
