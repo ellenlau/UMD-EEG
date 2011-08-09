@@ -1,7 +1,5 @@
 function hdf2eeglab(expDir,fileName,outputDir, subjNum,sampleRate)
 
-%%8/8/11 WARNING contains a hack that must be removed later! (line 54)
-
 %%This script reads in an h5 file created by cnt2h5 and saves it 
 %%out to EEGLAB's .set+.fdt format. 
 
@@ -50,7 +48,7 @@ function hdf2eeglab(expDir,fileName,outputDir, subjNum,sampleRate)
     %%**(this computation is slow, can it be optimized?)
     raw_data(numChan+1,:) = triggerLong;
     
- 
+    
     
     %%Now we read the data array into EEGLAB
     [ALLEEG EEG CURRENTSET ALLCOM] = eeglab;
